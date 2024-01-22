@@ -1,0 +1,60 @@
+enum EventStatus{
+  Active
+  Ended
+}
+
+type EventCreator @entity(immutable: true){
+  id: ID! 
+  createdEvents: [FundingEvent!] @derivedFrom(field: "owner")
+}
+
+type User @entity{
+  id: ID! 
+  participatedEvents: [UserFundingEvent!] @derivedFrom(field: "user")
+  projects: [Project!] @derivedFrom(field: "owner")
+  votesLeft: BigInt!
+  completedVotes: [Vote!] @derivedFrom(field: "user")
+  earnings: BigInt!
+}
+
+type FundingEvent @entity{
+  id: ID!
+  eventCID: String! 
+  eventDetails: IpfsMetadataDetails
+  owner: EventCreator! 
+  status: EventStatus
+  prizePool: BigInt!
+  users: [UserFundingEvent!] @derivedFrom(field: "event") 
+  projects: [Project!] @derivedFrom(field: "event")
+}
+
+type UserFundingEvent @entity(immutable: true){
+  id: ID!
+  user: User!
+  event: FundingEvent!
+}
+
+type Project @entity{
+  id: ID!
+  owner: User!
+  event: FundingEvent! 
+  projectCID: String! 
+  projectDetails: IpfsMetadataDetails
+  amountWon: BigInt! 
+  amountWithdrawn: Boolean!
+  votes: [Vote!] @derivedFrom(field: "project")
+}
+
+type Vote @entity(immutable: true){
+  id: ID!
+  project: Project! 
+  user: User! 
+  voteCount: BigInt! 
+}
+
+type IpfsMetadataDetails @entity {
+  id: ID!
+  name: String!
+  description: String!
+  link: String!
+}

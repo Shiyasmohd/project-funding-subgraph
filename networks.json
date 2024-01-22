@@ -1,0 +1,8 @@
+{
+  "sepolia": {
+    "QuadraticFundingFactory": {
+      "address": "0x2761c1513F59003B37a073ca1F5bcD6dC66DfA95",
+      "startBlock": 5124489
+    }
+  }
+}
