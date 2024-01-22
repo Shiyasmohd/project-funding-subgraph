@@ -80,6 +80,7 @@ contract FundingContract is Initializable {
 
         users[msg.sender].votesLeft -= _voteCount;
 
+        // Add vote to the project
         Vote memory newVote;
         newVote.userAddress = msg.sender;
         newVote.voteCount = _voteCount;
@@ -103,6 +104,7 @@ contract FundingContract is Initializable {
         newProject.projectOwner = msg.sender;
         newProject.totalVotes = 0;
 
+        // If user doesn't exist then create new user
         if(users[msg.sender].userAddress == address(0)){
             _totalUsers++;
             User storage newUser = users[msg.sender];
@@ -131,6 +133,7 @@ contract FundingContract is Initializable {
         uint256 counter;
         uint256 totalVotes = _totalUsers * MAX_VOTE;
 
+        // Distributing the prize pool
         for(counter = 1 ; counter <= _numberOfProjectsListed ; counter++){
             Project storage project = projects[counter];
             project.amountWon = (prizePool * project.totalVotes)/totalVotes;
@@ -143,12 +146,14 @@ contract FundingContract is Initializable {
     function withdrawFunds(uint256 _projectId) public {
 
         require(eventStatus == EventStatus.Ended);
+        require(projects[_projectId].isWithdrawnFund == false,"Fund already withdrawn");
 
         uint256 balance = address(this).balance;
         require(balance > 0, "nothing to withdraw");
 
         require(projects[_projectId].projectOwner == msg.sender,"You are not onwer of this project");
-
+        
+        // Transfer the funds to the owner
         uint256 availableBalance = projects[_projectId].amountWon;
         (bool success, ) = payable(msg.sender).call{value: availableBalance}("");
 

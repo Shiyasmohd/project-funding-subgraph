@@ -6,11 +6,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./FundingContract.sol";
 
 contract FundingFactory is Ownable {
-    //state variables;
+    
     address immutable fundingImplementation;
     address[] public _deployedContracts;
 
-    //events
     event newFundingCreated( address indexed owner, uint256 prizePool, address cloneAddress, string eventCID);
 
     constructor(address _implementation) Ownable(msg.sender) {
@@ -23,7 +22,11 @@ contract FundingFactory is Ownable {
         uint256 _duration
     ) external payable returns (address) {
         require(msg.value >= _prizePool, "deposit too small");
+
+        // Create a new contract
         address clone = Clones.clone(fundingImplementation);
+
+        // Initialize the contract
         (bool success, ) = clone.call(
             abi.encodeWithSignature(
                 "initialize(string,uint256,uint256)",
@@ -35,7 +38,10 @@ contract FundingFactory is Ownable {
         require(success, "creation failed");
 
         _deployedContracts.push(clone);
+
+        // Transfer the prize pool to the new contract
         payable(clone).transfer(_prizePool);
+
         emit newFundingCreated(
             msg.sender,
             _prizePool,
