@@ -81,7 +81,7 @@ Total 7 Entities are defined in `schema.graphql`
 
  1. Event Creator Details
  ```
- type EventCreator @entity {
+ type EventCreator @entity(immutable: true) {
   id: ID!  # Wallet Address of Event Creator
   createdEvents: [FundingEvent!] @derivedFrom(field: "owner")
 }
@@ -114,7 +114,7 @@ type FundingEvent @entity {
 ```
 4. 
 ```
-type UserFundingEvent @entity {
+type UserFundingEvent @entity(immutable: true) {
   id: ID!
   user: User!
   event: FundingEvent!
@@ -135,7 +135,7 @@ type Project @entity {
 ```
 6. Vote Details
 ```
-type Vote @entity {
+type Vote @entity(immutable: true) {
   id: ID! # Transaction Hash
   project: Project! 
   user: User!
